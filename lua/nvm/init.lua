@@ -10,6 +10,7 @@
 local M = {}
 
 local nvmrc = ".nvmrc"
+local default_node = os.getenv("HOME") .. "/.nvm/alias/default"
 local nvm_path = os.getenv("HOME") .. "/.nvm/versions/node/"
 
 -- Check if file exists
@@ -28,7 +29,10 @@ end
 local function get_version()
   local file = io.open(nvmrc, "rb") -- r read mode and b binary mode
   if not file then
-    return nil
+    file = io.open(default_node, "rb") -- r read mode and b binary mode
+    if not file then
+      return nil
+    end
   end
   local content = file:read("*a") -- *a or *all reads the whole file
   file:close()
@@ -69,14 +73,14 @@ end
 
 -- Callback when entering a directory or vim
 local function enter()
-  if file_exists(nvmrc) then
+  if file_exists(nvmrc) or file_exists(default_node) then
     activate()
   end
 end
 
 -- Callback when entering a directory or vim
 local function leave()
-  if file_exists(nvmrc) then
+  if file_exists(nvmrc) or file_exists(default_node) then
     deactivate()
   end
 end
